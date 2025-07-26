@@ -52,6 +52,35 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Couleurs des ressources
+				wood: {
+					DEFAULT: 'hsl(var(--wood))',
+					glow: 'hsl(var(--wood-glow))'
+				},
+				metal: {
+					DEFAULT: 'hsl(var(--metal))',
+					glow: 'hsl(var(--metal-glow))'
+				},
+				gold: {
+					DEFAULT: 'hsl(var(--gold))',
+					glow: 'hsl(var(--gold-glow))'
+				},
+				stone: {
+					DEFAULT: 'hsl(var(--stone))',
+					glow: 'hsl(var(--stone-glow))'
+				},
+				cash: {
+					DEFAULT: 'hsl(var(--cash))',
+					glow: 'hsl(var(--cash-glow))'
+				},
+				crypto: {
+					DEFAULT: 'hsl(var(--crypto))',
+					glow: 'hsl(var(--crypto-glow))'
+				},
+				diamond: {
+					DEFAULT: 'hsl(var(--diamond))',
+					glow: 'hsl(var(--diamond-glow))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
