@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatNumber } from '@/lib/utils';
+import { useState, useEffect } from 'react';
 
 interface ResourceCardProps {
   type: 'wood' | 'metal' | 'gold' | 'stone';
@@ -9,6 +10,7 @@ interface ResourceCardProps {
   icon: string;
   label: string;
   baseAmount: number;
+  lastCollectTime: number;
 }
 
 const resourceGradients = {
@@ -18,7 +20,25 @@ const resourceGradients = {
   stone: 'bg-gradient-to-br from-stone to-stone-glow',
 };
 
-export function ResourceCard({ type, amount, onCollect, icon, label, baseAmount }: ResourceCardProps) {
+export function ResourceCard({ type, amount, onCollect, icon, label, baseAmount, lastCollectTime }: ResourceCardProps) {
+  const [timeLeft, setTimeLeft] = useState(0);
+  const cooldownTime = 300000; // 5 minutes
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentTime = Date.now();
+      const timeSinceLastCollect = currentTime - lastCollectTime;
+      const remaining = Math.max(0, cooldownTime - timeSinceLastCollect);
+      setTimeLeft(remaining);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [lastCollectTime]);
+
+  const canCollect = timeLeft === 0;
+  const minutes = Math.floor(timeLeft / 60000);
+  const seconds = Math.floor((timeLeft % 60000) / 1000);
+
   return (
     <Card className="relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg">
       <div className={`absolute inset-0 opacity-10 ${resourceGradients[type]}`} />
@@ -36,10 +56,14 @@ export function ResourceCard({ type, amount, onCollect, icon, label, baseAmount 
         </div>
         <Button 
           onClick={() => onCollect(baseAmount)}
+          disabled={!canCollect}
           className={`w-full ${resourceGradients[type]} text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300`}
           size="lg"
         >
-          Collecter +{baseAmount}
+          {canCollect 
+            ? `Collecter +${baseAmount}` 
+            : `Cooldown ${minutes}:${seconds.toString().padStart(2, '0')}`
+          }
         </Button>
       </CardContent>
     </Card>

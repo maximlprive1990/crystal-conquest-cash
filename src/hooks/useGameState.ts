@@ -23,6 +23,8 @@ export interface GameState {
   crypto: {
     balance: number; // en $ USD
   };
+  lastCollectTime: number;
+  lastFaucetTime: number;
   autoSave: boolean;
 }
 
@@ -33,7 +35,7 @@ const INITIAL_STATE: GameState = {
     gold: 0,
     stone: 0,
     cash: 0,
-    diamonds: 10, // Commence avec quelques diamants
+    diamonds: 50, // Plus de diamants pour embaucher des employés
   },
   buildings: {
     sawmill: { level: 1, multiplier: 1 },
@@ -42,13 +44,15 @@ const INITIAL_STATE: GameState = {
   },
   experience: 0,
   employees: {
-    sawmill: 0,
-    mine: 0,
-    metallurgy: 0,
+    sawmill: 1, // Commence avec 1 employé dans chaque bâtiment
+    mine: 1,
+    metallurgy: 1,
   },
   crypto: {
     balance: 0,
   },
+  lastCollectTime: 0,
+  lastFaucetTime: 0,
   autoSave: true,
 };
 
@@ -95,13 +99,14 @@ export function useGameState() {
     }
   }, [gameState]);
 
-  // Production automatique des employés
+  // Production automatique des employés et faucet de diamants
   useEffect(() => {
     const interval = setInterval(() => {
       setGameState(prev => {
         const newState = { ...prev };
+        const currentTime = Date.now();
         
-        // Production des employés
+        // Production des employés (seulement s'il y en a)
         if (prev.employees.sawmill > 0) {
           newState.resources.wood += prev.employees.sawmill * EMPLOYEE_PRODUCTION.sawmill;
         }
@@ -113,6 +118,13 @@ export function useGameState() {
           newState.resources.metal += prev.employees.metallurgy * EMPLOYEE_PRODUCTION.metallurgy;
         }
 
+        // Faucet de diamants toutes les 5 minutes
+        if (currentTime - prev.lastFaucetTime >= 300000) { // 5 minutes = 300000ms
+          const diamondReward = Math.floor(Math.random() * 11) + 5; // Entre 5 et 15 diamants
+          newState.resources.diamonds += diamondReward;
+          newState.lastFaucetTime = currentTime;
+        }
+
         return newState;
       });
     }, 1000); // Chaque seconde
@@ -122,6 +134,15 @@ export function useGameState() {
 
   const collectResource = useCallback((type: 'wood' | 'metal' | 'gold' | 'stone', amount: number) => {
     setGameState(prev => {
+      const currentTime = Date.now();
+      const timeSinceLastCollect = currentTime - prev.lastCollectTime;
+      const cooldownTime = 300000; // 5 minutes en millisecondes
+      
+      // Vérifier le cooldown de 5 minutes
+      if (timeSinceLastCollect < cooldownTime) {
+        return prev; // Ne rien faire si le cooldown n'est pas écoulé
+      }
+      
       const building = type === 'wood' ? 'sawmill' : type === 'metal' ? 'metallurgy' : 'mine';
       const multiplier = prev.buildings[building].multiplier;
       const expMultiplier = 1 + (prev.experience * 0.01); // 1% par niveau d'XP
@@ -134,6 +155,7 @@ export function useGameState() {
           ...prev.resources,
           [type]: prev.resources[type] + finalAmount,
         },
+        lastCollectTime: currentTime,
       };
     });
   }, []);

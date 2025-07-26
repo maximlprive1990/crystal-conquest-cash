@@ -58,38 +58,42 @@ const Index = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <ResourceCard
-                          type="wood"
-                          amount={gameState.resources.wood}
-                          onCollect={(amount) => collectResource('wood', amount)}
-                          icon="🪵"
-                          label="Bois"
-                          baseAmount={50}
-                        />
-                        <ResourceCard
-                          type="metal"
-                          amount={gameState.resources.metal}
-                          onCollect={(amount) => collectResource('metal', amount)}
-                          icon="⚙️"
-                          label="Métal"
-                          baseAmount={25}
-                        />
-                        <ResourceCard
-                          type="gold"
-                          amount={gameState.resources.gold}
-                          onCollect={(amount) => collectResource('gold', amount)}
-                          icon="🥇"
-                          label="Or"
-                          baseAmount={10}
-                        />
-                        <ResourceCard
-                          type="stone"
-                          amount={gameState.resources.stone}
-                          onCollect={(amount) => collectResource('stone', amount)}
-                          icon="🗿"
-                          label="Roche"
-                          baseAmount={40}
-                        />
+                         <ResourceCard
+                           type="wood"
+                           amount={gameState.resources.wood}
+                           onCollect={(amount) => collectResource('wood', amount)}
+                           icon="🪵"
+                           label="Bois"
+                           baseAmount={50}
+                           lastCollectTime={gameState.lastCollectTime}
+                         />
+                         <ResourceCard
+                           type="metal"
+                           amount={gameState.resources.metal}
+                           onCollect={(amount) => collectResource('metal', amount)}
+                           icon="⚙️"
+                           label="Métal"
+                           baseAmount={25}
+                           lastCollectTime={gameState.lastCollectTime}
+                         />
+                         <ResourceCard
+                           type="gold"
+                           amount={gameState.resources.gold}
+                           onCollect={(amount) => collectResource('gold', amount)}
+                           icon="🥇"
+                           label="Or"
+                           baseAmount={10}
+                           lastCollectTime={gameState.lastCollectTime}
+                         />
+                         <ResourceCard
+                           type="stone"
+                           amount={gameState.resources.stone}
+                           onCollect={(amount) => collectResource('stone', amount)}
+                           icon="🗿"
+                           label="Roche"
+                           baseAmount={40}
+                           lastCollectTime={gameState.lastCollectTime}
+                         />
                       </div>
                     </CardContent>
                   </Card>
