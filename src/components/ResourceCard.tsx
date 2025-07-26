@@ -28,7 +28,8 @@ export function ResourceCard({ type, amount, onCollect, icon, label, baseAmount,
     const interval = setInterval(() => {
       const currentTime = Date.now();
       const timeSinceLastCollect = currentTime - lastCollectTime;
-      const remaining = Math.max(0, cooldownTime - timeSinceLastCollect);
+      // Si c'est la première fois (lastCollectTime === 0), pas de cooldown
+      const remaining = lastCollectTime === 0 ? 0 : Math.max(0, cooldownTime - timeSinceLastCollect);
       setTimeLeft(remaining);
     }, 1000);
 

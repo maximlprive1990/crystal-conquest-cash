@@ -89,7 +89,22 @@ export const EMPLOYEE_PRODUCTION = {
 export function useGameState() {
   const [gameState, setGameState] = useState<GameState>(() => {
     const saved = localStorage.getItem('resource-game-state');
-    return saved ? JSON.parse(saved) : INITIAL_STATE;
+    if (saved) {
+      const parsedState = JSON.parse(saved);
+      // Mettre à jour les anciens saves avec les nouveaux champs
+      return {
+        ...INITIAL_STATE,
+        ...parsedState,
+        lastCollectTime: parsedState.lastCollectTime || 0,
+        lastFaucetTime: parsedState.lastFaucetTime || Date.now(),
+        employees: {
+          sawmill: Math.max(1, parsedState.employees?.sawmill || 1),
+          mine: Math.max(1, parsedState.employees?.mine || 1),
+          metallurgy: Math.max(1, parsedState.employees?.metallurgy || 1),
+        }
+      };
+    }
+    return { ...INITIAL_STATE, lastFaucetTime: Date.now() };
   });
 
   // Sauvegarde automatique
@@ -138,8 +153,8 @@ export function useGameState() {
       const timeSinceLastCollect = currentTime - prev.lastCollectTime;
       const cooldownTime = 300000; // 5 minutes en millisecondes
       
-      // Vérifier le cooldown de 5 minutes
-      if (timeSinceLastCollect < cooldownTime) {
+      // Permettre la première collecte si lastCollectTime est 0
+      if (prev.lastCollectTime !== 0 && timeSinceLastCollect < cooldownTime) {
         return prev; // Ne rien faire si le cooldown n'est pas écoulé
       }
       
